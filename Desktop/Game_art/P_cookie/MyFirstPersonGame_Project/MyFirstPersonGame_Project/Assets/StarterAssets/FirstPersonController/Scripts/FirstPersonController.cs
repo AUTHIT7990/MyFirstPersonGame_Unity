@@ -10,8 +10,8 @@ namespace StarterAssets
 	[RequireComponent(typeof(PlayerInput))]
 #endif
 	public class FirstPersonController : MonoBehaviour
-	{
-		[Header("Player")]
+    {
+        [Header("Player")]
 		[Tooltip("Move speed of the character in m/s")]
 		public float MoveSpeed = 4.0f;
 		[Tooltip("Sprint speed of the character in m/s")]
@@ -51,8 +51,65 @@ namespace StarterAssets
 		[Tooltip("How far in degrees can you move the camera down")]
 		public float BottomClamp = -90.0f;
 
+        // OnMove: ถูกเรียกเมื่อ Input Action "Move" ถูกเรียกใช้งาน
+        // context: ข้อมูลการกดปุ่ม (Input) ที่ส่งมาจาก Input System
+        public void OnMove(InputAction.CallbackContext context)
+        {
+            if (context.performed) // เมื่อกดปุ่มและได้ค่า Input (เช่น W, A, S, D)
+            {
+                _input.move = context.ReadValue<Vector2>();
+            }
+            else if (context.canceled) // เมื่อปล่อยปุ่ม Input (เช่น ปล่อย W)
+            {
+                _input.move = Vector2.zero; // กำหนดค่า Input การเคลื่อนที่ให้เป็นศูนย์ทันที
+            }
+        }
+        // OnLook: ถูกเรียกเมื่อ Input Action "Look" ถูกเรียกใช้งาน
+        // context: ข้อมูลการกดปุ่ม (Input) ที่ส่งมาจาก Input System
+        public void OnLook(InputAction.CallbackContext context)
+        {
+            if (context.performed) // เมื่อขยับเมาส์และได้ค่า Input
+            {
+                _input.look = context.ReadValue<Vector2>();
+            }
+            else if (context.canceled) // เมื่อหยุดขยับเมาส์ หรือเมาส์อยู่กับที่
+            {
+                _input.look = Vector2.zero; // กำหนดค่า Input การมองให้เป็นศูนย์ทันที
+            }
+        }
+        // OnJump: ถูกเรียกเมื่อ Input Action "Jump" ถูกเรียกใช้งาน
+        // context: ข้อมูลการกดปุ่ม (Input) ที่ส่งมาจาก Input System
+        public void OnJump(InputAction.CallbackContext context)
+        {
+            // ตรวจสอบว่าปุ่มถูกกดลงไป (started) [cite: 32]
+            if (context.started)
+            {
+                _input.jump = true;
+            }
+            // ตรวจสอบว่าปุ่มถูกปล่อย (canceled)
+            else if (context.canceled)
+            {
+                _input.jump = false;
+            }
+        }
+        // OnSprint: ถูกเรียกเมื่อ Input Action "Sprint" ถูกเรียกใช้งาน
+        // context: ข้อมูลการกดปุ่ม (Input) ที่ส่งมาจาก Input System
+        public void OnSprint(InputAction.CallbackContext context)
+        {
+            // ตรวจสอบว่าปุ่มถูกกดลงไป (started)
+            if (context.started)
+            {
+                _input.sprint = true;
+            }
+            // ตรวจสอบว่าปุ่มถูกปล่อย (canceled)
+            else if (context.canceled)
+            {
+                _input.sprint = false;
+            }
+        }
+        
 		// cinemachine
-		private float _cinemachineTargetPitch;
+        private float _cinemachineTargetPitch;
 
 		// player
 		private float _speed;

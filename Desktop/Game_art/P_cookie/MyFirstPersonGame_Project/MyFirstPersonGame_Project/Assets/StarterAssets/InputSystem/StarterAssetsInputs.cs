@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -14,9 +14,9 @@ namespace StarterAssets
 		public bool sprint;
 
 		[Header("Movement Settings")]
-		public bool analogMovement;
+        public bool analogMovement = false; // ตรวจสอบให้แน่ใจว่าค่าเริ่มต้นเป็น false
 
-		[Header("Mouse Cursor Settings")]
+        [Header("Mouse Cursor Settings")]
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
 
