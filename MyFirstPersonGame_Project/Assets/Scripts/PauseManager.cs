@@ -4,78 +4,81 @@ using UnityEngine.SceneManagement; // สำหรับเปลี่ยน Sc
 
 public class PauseManager : MonoBehaviour
 {
-    // อ้างอิงถึง Panel หยุดเกม (กำหนดใน Inspector)
     [SerializeField] private GameObject pausePanel;
+    // เพิ่มตัวแปรสำหรับอ้างอิงถึง PlayerInputComponent
+    [SerializeField] private PlayerInput playerInputComponent;
 
-    private bool isPaused = false; // สถานะหยุดเกม
+    private bool isPaused = false;
 
     private void Start()
     {
-        // ซ่อน PausePanel เมื่อเริ่มเกม
         if (pausePanel != null)
         {
             pausePanel.SetActive(false);
         }
-        // ตรวจสอบให้แน่ใจว่าเวลาในเกมเดินปกติเมื่อเริ่ม
         Time.timeScale = 1f;
     }
 
-    // ฟังก์ชันสำหรับรับ Input จากปุ่ม Pause (จะผูกกับ Action "Pause" ใน Input System)
     public void OnPause(InputAction.CallbackContext context)
     {
-        if (context.started) // เมื่อปุ่มถูกกดลงไป
+        if (context.started)
         {
             if (isPaused)
             {
-                ResumeGame(); // ถ้าหยุดอยู่ ให้เล่นต่อ
+                ResumeGame();
             }
             else
             {
-                PauseGame(); // ถ้าเล่นอยู่ ให้หยุด
+                PauseGame();
             }
         }
     }
 
-    // ฟังก์ชันหยุดเกม
     public void PauseGame()
     {
         isPaused = true;
         if (pausePanel != null)
         {
-            pausePanel.SetActive(true); // แสดง PausePanel
+            pausePanel.SetActive(true);
         }
-        Time.timeScale = 0f; // หยุดเวลาในเกม (ทำให้ทุกอย่างหยุดนิ่ง)
-        // แสดงเมาส์และปลดล็อก (เพื่อให้ผู้เล่นกดปุ่มใน UI)
+        Time.timeScale = 0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+
+        // ปิดการทำงานของ PlayerInputComponent เมื่อหยุดเกม
+        if (playerInputComponent != null)
+        {
+            playerInputComponent.enabled = false;
+        }
     }
 
-    // ฟังก์ชันเล่นเกมต่อ
     public void ResumeGame()
     {
         isPaused = false;
         if (pausePanel != null)
         {
-            pausePanel.SetActive(false); // ซ่อน PausePanel
+            pausePanel.SetActive(false);
         }
-        Time.timeScale = 1f; // ให้เวลาในเกมเดินปกติ
-        // ซ่อนเมาส์และล็อกไว้กลางจอเมื่อกลับมาเล่น
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        Time.timeScale = 1f;
+        Cursor.visible = false; // ซ่อนเมาส์เมื่อกลับมาเล่น
+        Cursor.lockState = CursorLockMode.Locked; // ล็อกเมาส์ไว้กลางจอ
+
+        // เปิดการทำงานของ PlayerInputComponent เมื่อเล่นต่อ
+        if (playerInputComponent != null)
+        {
+            playerInputComponent.enabled = true;
+        }
     }
 
-    // ฟังก์ชันสำหรับปุ่ม Restart (ผูกใน On Click ของปุ่ม)
     public void RestartGame()
     {
-        ResumeGame(); // ตรวจสอบให้แน่ใจว่าเวลาเดินปกติก่อนเปลี่ยน Scene
-        // โหลด Scene Gameplay ปัจจุบันซ้ำ เพื่อเริ่มเกมใหม่
+        ResumeGame();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    // ฟังก์ชันสำหรับปุ่ม Main Menu (ผูกใน On Click ของปุ่ม)
     public void GoToMainMenu()
     {
-        ResumeGame(); // ตรวจสอบให้แน่ใจว่าเวลาเดินปกติก่อนเปลี่ยน Scene
-        SceneManager.LoadScene("MainMenu"); // โหลด Scene MainMenu
+        ResumeGame();
+        SceneManager.LoadScene("MainMenu");
     }
 }
